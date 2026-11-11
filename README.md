@@ -54,7 +54,13 @@ openforms2xxllnc.workflows.auto-retries.cleanup-submission.max-retries=5
 
 ### Manual Cleanup Tests
 
-Use the `notificaties HappyFlowPersoon` case in `e2e/SoapUI/openforms2xxllnc-e2e-soapui-project.xml`, with all five mock services running and the local SoapUI global property `notificationAuthorization` configured. Run cases sequentially because the mocks share project properties.
+Use the `notificaties HappyFlowPersoon` case in `e2e/SoapUI/openforms2xxllnc-e2e-soapui-project.xml` with all five mock services running. Before running it, open **File > Preferences > Global Properties** in SoapUI and add:
+
+| Name | Value |
+| --- | --- |
+| `notificationAuthorization` | The password value for `forms-object-callback/password` in your local `src/main/secrets/credentials.properties` file |
+
+Copy the credential's value, not the literal `forms-object-callback/password` key. Keep the value local; do not commit it or put it in the SoapUI project. Run cases sequentially because the mocks share project properties.
 
 - Happy flow: the test verifies the object fetch, two StUF uploads, and object/document DELETE calls. Inspect `Handler_CleanupSubmissionCommand` in Ladybug for the individual HTTP results.
 - Cleanup failure: set the test-case property `cleanupDocumentStatus` to `500` and run the case. Its final assertion should fail. Restore the **project** property `cleanupDocumentStatus` to `204`, manually retry only the cleanup error-store message, then rerun only the final verification step. The upload count must remain two. The equivalent `cleanupObjectStatus` property simulates an object DELETE failure.
